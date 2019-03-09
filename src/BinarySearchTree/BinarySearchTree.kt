@@ -12,11 +12,8 @@ class BinarySearchTree<K: Comparable<K>, V> : Tree<K, V> {
     }
 
     override fun find(key: K): Pair<K, V>? {
-        val result = findNode(key)
-        return when (result) {
-            null -> null
-            else -> Pair(result.key, result.value)
-        }
+        val result = findNode(key) ?: return null
+        return Pair(result.key, result.value)
     }
 
     override fun insert(key: K, value: V) {
@@ -53,10 +50,10 @@ class BinarySearchTree<K: Comparable<K>, V> : Tree<K, V> {
                 root = null
                 return
             }
-            if (cur == father?.left) {
+            if (cur == father.left) {
                 father.left = null
             }
-            if (cur == father?.right) {
+            if (cur == father.right) {
                 father.right = null
             }
         }
