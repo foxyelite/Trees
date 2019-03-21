@@ -6,73 +6,109 @@ class Node<K : Comparable<K>, V>(
         var parent: Node<K, V>? = null,
         var isBlack: Boolean = false
 ) {
+
     var left: Node<K, V>? = null
     var right: Node<K, V>? = null
 
     override fun equals(other: Any?): Boolean {
+
         if (this === other) return true
         if (other?.javaClass != javaClass) return false
+
         other as Node<*, *>
-        if (key != other.key) return false
-        if (value != other.value) return false
-        if (parent != other.parent) return false
-        if (isBlack != other.isBlack) return false
-        if (left != other.left) return false
-        if (right != other.right) return false
-        return true
+
+        return when {
+            value != other.value -> false
+            parent != other.parent -> false
+            left != other.left -> false
+            key != other.key -> false
+            right != other.right -> false
+            isBlack != other.isBlack -> false
+            else -> true
+        }
+
     }
 
     override fun hashCode(): Int {
+
         var result = key.hashCode()
+
         result = 31 * result + (value?.hashCode() ?: 0)
         result = 31 * result + (parent?.hashCode() ?: 0)
         result = 31 * result + isBlack.hashCode()
         result = 31 * result + (left?.hashCode() ?: 0)
         result = 31 * result + (right?.hashCode() ?: 0)
+
         return result
+
     }
 
-    fun brother(): Node<K, V>? {
-        if (this == this.parent?.left)
-            return this.parent!!.right
-        return this.parent?.left
+    fun sibling(): Node<K, V>? = when (this) {
+
+        parent?.left -> parent!!.right
+        else -> parent?.left
+
     }
+
+    fun grandparent(): Node<K, V>? = this.parent?.parent
+
+    fun uncle(): Node<K, V>? = when (this.parent) {
+
+        this.grandparent()?.left -> this.grandparent()!!.right
+        else -> this.grandparent()?.left
+
+    }
+
+    fun isLeaf() = this.left == null && this.right == null
 
     private fun swapColors(node: Node<K, V>?) {
+
         val tmp = this.isBlack
+
         if (node != null) {
             this.isBlack = node.isBlack
             node.isBlack = tmp
         }
+
     }
 
     fun leftRotate() {
+
         val rightChild = this.right ?: return
-        val father = this.parent
+        val parent = this.parent
+
         this.swapColors(rightChild)
         rightChild.left?.parent = this
         this.right = rightChild.left
         rightChild.left = this
-        when {
-            this == father?.left -> father.left = rightChild
-            this == father?.right -> father.right = rightChild
+
+        when (this) {
+            parent?.left -> parent.left = rightChild
+            parent?.right -> parent.right = rightChild
         }
+
         this.parent = rightChild
-        rightChild.parent = father
+        rightChild.parent = parent
+
     }
 
     fun rightRotate() {
+
         val leftChild = this.left ?: return
-        val father = this.parent
+        val parent = this.parent
+
         this.swapColors(leftChild)
         leftChild.right?.parent = this
         this.left = leftChild.right
         leftChild.right = this
-        when {
-            this == father?.left -> father.left = leftChild
-            this == father?.right -> father.right = leftChild
+
+        when (this) {
+            parent?.left -> parent.left = leftChild
+            parent?.right -> parent.right = leftChild
         }
+
         this.parent = leftChild
-        leftChild.parent = father
+        leftChild.parent = parent
+
     }
 }

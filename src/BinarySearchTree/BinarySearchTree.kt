@@ -2,25 +2,33 @@ package BinarySearchTree
 
 import Tree
 
-class BinarySearchTree<K: Comparable<K>, V> : Tree<K, V> {
+class BinarySearchTree<K : Comparable<K>, V> : Tree<K, V>, Iterable<Pair<K, V>> {
+
     var root: Node<K, V>? = null
 
     private fun findNode(key: K, cur: Node<K, V>? = root): Node<K, V>? = when {
+
         cur == null || key == cur.key -> cur
         key < cur.key -> findNode(key, cur.left)
         else -> findNode(key, cur.right)
+
     }
 
     override fun find(key: K): Pair<K, V>? {
+
         val result = findNode(key) ?: return null
+
         return Pair(result.key, result.value)
+
     }
 
     override fun insert(key: K, value: V) {
-        var father: Node<K, V>? = null
+
+        var parent: Node<K, V>? = null
         var cur: Node<K, V>? = root
+
         while (cur != null) {
-            father = cur
+            parent = cur
             when {
                 key < cur.key -> cur = cur.left
                 key > cur.key -> cur = cur.right
@@ -30,54 +38,53 @@ class BinarySearchTree<K: Comparable<K>, V> : Tree<K, V> {
                 }
             }
         }
-        if (father == null) {
+
+        if (parent == null) {
             root = Node(key, value)
             return
         }
-        if (key < father.key) {
-            father.left = Node(key, value, father)
+
+        if (key < parent.key) {
+            parent.left = Node(key, value, parent)
+        } else {
+            parent.right = Node(key, value, parent)
         }
-        else {
-            father.right = Node(key, value, father)
-        }
+
     }
 
     override fun delete(key: K) {
+
         val cur: Node<K, V> = findNode(key) ?: return
-        val father: Node<K, V>? = cur.parent
+        val parent: Node<K, V>? = cur.parent
+
         if (cur.left == null && cur.right == null) {
-            if (father == null) {
+            if (parent == null) {
                 root = null
                 return
             }
-            if (cur == father.left) {
-                father.left = null
+            if (cur == parent.left) {
+                parent.left = null
             }
-            if (cur == father.right) {
-                father.right = null
+            if (cur == parent.right) {
+                parent.right = null
             }
-        }
-        else if (cur.left == null || cur.right == null) {
+        } else if (cur.left == null || cur.right == null) {
             if (cur.left == null) {
-                if (cur == father?.left) {
-                    father.left = cur.right
+                if (cur == parent?.left) {
+                    parent.left = cur.right
+                } else {
+                    parent?.right = cur.right
                 }
-                else {
-                    father?.right = cur.right
+                cur.right?.parent = parent
+            } else {
+                if (cur == parent?.left) {
+                    parent.left = cur.left
+                } else {
+                    parent?.right = cur.left
                 }
-                cur.right?.parent = father
+                cur.left?.parent = parent
             }
-            else {
-                if (cur == father?.left) {
-                    father.left = cur.left
-                }
-                else {
-                    father?.right = cur.left
-                }
-                cur.left?.parent = father
-            }
-        }
-        else {
+        } else {
             val succesor: Node<K, V> = min(cur.right)!!
             cur.key = succesor.key
             if (succesor == succesor.parent?.left) {
@@ -85,48 +92,62 @@ class BinarySearchTree<K: Comparable<K>, V> : Tree<K, V> {
                 if (succesor.right != null) {
                     succesor.right!!.parent = succesor.parent
                 }
-            }
-            else {
+            } else {
                 succesor.parent?.right = succesor.right
                 if (succesor.right != null)
                     succesor.right!!.parent = succesor.parent
             }
         }
+
     }
 
-    fun min(cur: Node<K, V>?): Node<K, V>? = when {
+    private fun min(cur: Node<K, V>?): Node<K, V>? = when {
+
         cur?.left == null -> cur
         else -> min(cur.left)
+
     }
 
-    fun max(cur: Node<K, V>?): Node<K, V>? = when {
+    private fun max(cur: Node<K, V>?): Node<K, V>? = when {
+
         cur?.right == null -> cur
         else -> max(cur.right)
+
     }
 
     private fun next(cur: Node<K, V>?): Node<K, V>? {
-        var nxt = cur ?: return null
-        if (nxt.right != null) {
-            return min(nxt.right!!)
-        }
-        else if (nxt == nxt.parent?.right) {
-            while (nxt == nxt.parent?.right) {
-                nxt = nxt.parent!!
+
+        var next = cur ?: return null
+
+        if (next.right != null) {
+            return min(next.right!!)
+        } else if (next == next.parent?.right) {
+            while (next == next.parent?.right) {
+                next = next.parent!!
             }
         }
-        return nxt.parent
+
+        return next.parent
+
     }
 
-    private fun prev(cur: Node<K, V>?): Node<K, V>? {
-        var prv = cur ?: return null
-        if (prv.left != null) {
-            return max(prv.left!!)
-        }
-        else if (prv == prv.parent?.left) {
-            while (prv == prv.parent?.left) {
-                prv = prv.parent!!
+    override fun iterator(): Iterator<Pair<K, V>> {
+
+        return (object : Iterator<Pair<K, V>> {
+
+            var cur: Node<K, V>? = min(root)
+            var prev: Node<K, V>? = min(root)
+            var last: Node<K, V>? = max(root)
+
+            override fun hasNext(): Boolean = cur != null && cur!!.key <= last!!.key
+
+            override fun next(): Pair<K, V> {
+                prev = cur
+                cur = next(cur)
+                return Pair(prev!!.key, prev!!.value)
             }
-        }
-        return prv.parent
+        })
+
     }
+
 }
