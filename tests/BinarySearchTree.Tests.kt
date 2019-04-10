@@ -7,122 +7,329 @@ import org.junit.jupiter.api.Test
 @DisplayName("Tests for Binary Search Tree")
 internal class TestBinarySearchTree {
 
-    private val BSTree = BinarySearchTree<Int, Int>()
+    private val Tree = BinarySearchTree<Int, Int>()
 
-    @DisplayName("SearchExistingKey")
-    @Test fun testSearchExistenKey() {
+    @DisplayName("Search existing key")
+    @Test fun testSearchExistingKey() {
 
-        val a: MutableList<Int> = MutableList(100) { it + 1 }
+        for (testInputLenght in 0..1000) {
 
-        a.shuffle()
+            val testInput: MutableList<Int> = MutableList(testInputLenght) { it + 1 }
 
-        for (x in a) {
-            BSTree.insert(x, x)
-        }
+            testInput.shuffle()
 
-        for (x in a) {
-            assertEquals(BSTree.find(x), Pair(x, x))
+            for (x in testInput) {
+                Tree.insert(x, x)
+            }
+
+            for (x in testInput) {
+                assertEquals(Tree.find(x), Pair(x, x))
+            }
         }
 
     }
 
-    @DisplayName("SearchNonExistingKey")
-    @Test fun testSearchNonExistenKey() {
+    @DisplayName("Search in root")
+    @Test fun testSearchInRoot() {
 
-        val a: MutableList<Int> = MutableList(100) { it + 1 }
-
-        a.shuffle()
-
-        for (x in a) {
-            BSTree.insert(x, x)
-        }
-
-        assertNull(BSTree.find(0))
-        assertNull(BSTree.find(101))
+        Tree.insert(1, 1)
+        assertEquals(Tree.find(1), Pair(1, 1))
 
     }
 
-    @DisplayName("InsertValidationCheck")
+    @DisplayName("Search case 1")
+    @Test fun testSearchCase1() {
+
+        Tree.insert(1, 1)
+        Tree.insert(2, 2)
+
+        assertEquals(Tree.find(2), Pair(2, 2))
+        assertEquals(Tree.find(1), Pair(1, 1))
+
+    }
+
+    @DisplayName("Search case 2")
+    @Test fun testSearchCase2() {
+
+        Tree.insert(2, 2)
+        Tree.insert(1, 1)
+
+        assertEquals(Tree.find(2), Pair(2, 2))
+        assertEquals(Tree.find(1), Pair(1, 1))
+
+    }
+
+    @DisplayName("Search case 3")
+    @Test fun testSearchCase3() {
+
+        Tree.insert(1, 1)
+        Tree.insert(2, 2)
+        Tree.insert(3, 3)
+
+        assertEquals(Tree.find(3), Pair(3, 3))
+        assertEquals(Tree.find(2), Pair(2, 2))
+        assertEquals(Tree.find(1), Pair(1, 1))
+
+    }
+
+    @DisplayName("Search case 4")
+    @Test fun testSearchCase4() {
+
+        Tree.insert(3, 3)
+        Tree.insert(2, 2)
+        Tree.insert(1, 1)
+
+        assertEquals(Tree.find(3), Pair(3, 3))
+        assertEquals(Tree.find(2), Pair(2, 2))
+        assertEquals(Tree.find(1), Pair(1, 1))
+
+    }
+
+
+    @DisplayName("Search case 5")
+    @Test fun testSearchCase5() {
+
+        Tree.insert(2, 2)
+        Tree.insert(3, 3)
+        Tree.insert(1, 1)
+
+        assertEquals(Tree.find(3), Pair(3, 3))
+        assertEquals(Tree.find(2), Pair(2, 2))
+        assertEquals(Tree.find(1), Pair(1, 1))
+
+    }
+
+    @DisplayName("Search nonexisting key in empty tree")
+    @Test fun testSearchNonExistingKeyInEmptyTree() {
+
+        assertNull(Tree.find(0))
+        assertNull(Tree.find(101))
+
+    }
+
+    @DisplayName("Search non existing key in nonempty tree")
+    @Test fun testSearchNonExistingKeyInNonEmptyTree() {
+
+        val testInput: MutableList<Int> = MutableList(100) { it + 1 }
+
+        testInput.shuffle()
+
+        for (x in testInput) {
+            Tree.insert(x, x)
+        }
+
+        assertNull(Tree.find(0))
+        assertNull(Tree.find(101))
+
+    }
+
+    @DisplayName("Insert check")
     @Test fun testInsert() {
 
-        val a: MutableList<Int> = MutableList(100) { it + 1 }
+        for (testInputLenght in 0..1000) {
 
-        a.shuffle()
+            val testInput: MutableList<Int> = MutableList(testInputLenght) { it + 1 }
 
-        for (x in a) {
-            BSTree.insert(x, x)
-        }
+            testInput.shuffle()
 
-        for (x in a) {
-            assertEquals(BSTree.find(x), Pair(x, x))
+            for (x in testInput) {
+                Tree.insert(x, x)
+            }
+
+            for (x in testInput) {
+                assertEquals(Tree.find(x), Pair(x, x))
+            }
+
         }
 
     }
 
-    @DisplayName("DeleteRootValidationCheck")
+    @DisplayName("Delete root check")
     @Test fun testDeleteRoot() {
 
-        BSTree.insert(1, 1)
-        BSTree.delete(1)
-        assertNull(BSTree.root)
+        Tree.insert(1, 1)
+        Tree.delete(1)
+        assertNull(Tree.root)
 
     }
 
-    @DisplayName("DeleteValidationCheck")
+    @DisplayName("Delete case 1")
+    @Test fun testDeleteCase1() {
+
+        Tree.insert(1, 1)
+        Tree.insert(2, 2)
+
+        Tree.delete(1)
+
+        assertNotNull(Tree.find(2))
+        assertNull(Tree.find(1))
+
+    }
+
+    @DisplayName("Delete case 2")
+    @Test fun testDeleteCase2() {
+
+        Tree.insert(2, 2)
+        Tree.insert(1, 1)
+
+        Tree.delete(2)
+
+        assertNull(Tree.find(2))
+        assertNotNull(Tree.find(1))
+
+    }
+
+    @DisplayName("Delete case 3")
+    @Test fun testDeleteCase3() {
+
+        Tree.insert(1, 1)
+        Tree.insert(2, 2)
+        Tree.insert(3, 3)
+
+        Tree.delete(2)
+
+        assertNotNull(Tree.find(3))
+        assertNull(Tree.find(2))
+        assertNotNull(Tree.find(1))
+
+    }
+
+    @DisplayName("Delete case 4")
+    @Test fun testDeleteCase4() {
+
+        Tree.insert(3, 3)
+        Tree.insert(2, 2)
+        Tree.insert(1, 1)
+
+        Tree.delete(2)
+
+        assertNotNull(Tree.find(3))
+        assertNull(Tree.find(2))
+        assertNotNull(Tree.find(1))
+
+    }
+
+
+    @DisplayName("Delete case 5")
+    @Test fun testDeleteCase5() {
+
+        Tree.insert(2, 2)
+        Tree.insert(3, 3)
+        Tree.insert(1, 1)
+
+        Tree.delete(2)
+
+        assertNotNull(Tree.find(3))
+        assertNull(Tree.find(2))
+        assertNotNull(Tree.find(1))
+
+    }
+
+    @DisplayName("Delete case 6")
+    @Test fun testDeleteCase6() {
+
+        Tree.insert(1, 1)
+        Tree.insert(2, 2)
+
+        Tree.delete(2)
+
+        assertNull(Tree.find(2))
+        assertNotNull(Tree.find(1))
+
+    }
+
+    @DisplayName("Delete case 7")
+    @Test fun testDeleteCase7() {
+
+        Tree.insert(2, 2)
+        Tree.insert(1, 1)
+
+        Tree.delete(1)
+
+        assertNull(Tree.find(1))
+        assertNotNull(Tree.find(2))
+
+    }
+
+    @DisplayName("Delete case 8")
+    @Test fun testDeleteCase8() {
+
+        Tree.insert(1, 1)
+        Tree.insert(4, 4)
+        Tree.insert(3, 3)
+        Tree.insert(5, 5)
+
+        Tree.delete(4)
+
+        assertNull(Tree.find(4))
+        assertNotNull(Tree.find(1))
+        assertNotNull(Tree.find(3))
+        assertNotNull(Tree.find(5))
+
+    }
+
+    @DisplayName("Delete check")
     @Test fun testDelete() {
 
-        val a: MutableList<Int> = MutableList(200) { it + 1 }
+        for (testInputLength in 1..1000) {
 
-        a.shuffle()
+            val testInput: MutableList<Int> = MutableList(testInputLength) { it + 1 }
 
-        for (x in a) {
-            BSTree.insert(x, x)
-        }
+            testInput.shuffle()
 
-        val m = (49..99).random()
+            for (x in testInput) {
+                Tree.insert(x, x)
+            }
 
-        for (i in 0..m) {
-            BSTree.delete(a[i])
+            val m = testInputLength / 2
 
-        }
+            for (i in 0 until m) {
+                Tree.delete(testInput[i])
+            }
 
-        for (i in 0..m) {
-            assertNull(BSTree.find(a[i]))
-        }
+            for (i in 0 until m) {
+                assertNull(Tree.find(testInput[i]))
+            }
 
-        for (i in (m + 1)..199) {
-            assertNotNull(BSTree.find(a[i]))
+            for (i in m until testInputLength) {
+                assertNotNull(Tree.find(testInput[i]))
+            }
+
         }
 
     }
 
-    @DisplayName("IterateEmptyTreeValidation")
+    @DisplayName("Iterate empty tree")
     @Test fun testIterateEmptyTree() {
 
-        for (i in BSTree)
+        for (i in Tree)
             assertEquals(-1, 1)
 
     }
 
-    @DisplayName("IterateNormalTree")
+    @DisplayName("Iterate normal tree")
     @Test fun testIterateNormal() {
 
-        val a: MutableList<Int> = MutableList(200) { it + 1 }
+        for (testInputLength in 1..1000) {
 
-        a.shuffle()
+            val testInput: MutableList<Int> = MutableList(testInputLength) { it + 1 }
 
-        for (x in a) {
-            BSTree.insert(x, x)
-        }
+            testInput.shuffle()
 
-        var cur = 0
+            for (x in testInput) {
+                Tree.insert(x, x)
+            }
 
-        for (i in BSTree) {
-            ++cur
-            assertEquals(i, Pair(cur, cur))
+            var cur = 0
+
+            for (i in Tree) {
+                ++cur
+                assertEquals(i, Pair(cur, cur))
+            }
         }
 
     }
 
 }
+
 

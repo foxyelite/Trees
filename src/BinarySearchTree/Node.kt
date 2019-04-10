@@ -17,11 +17,11 @@ class Node<K : Comparable<K>, V>(
         other as Node<*, *>
 
         return when {
-            value != other.value -> false
-            parent != other.parent -> false
-            left != other.left -> false
             key != other.key -> false
+            value != other.value -> false
+            left != other.left -> false
             right != other.right -> false
+            parent != other.parent -> false
             else -> true
         }
 

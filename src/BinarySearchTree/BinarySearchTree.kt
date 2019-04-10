@@ -6,19 +6,31 @@ class BinarySearchTree<K : Comparable<K>, V> : Tree<K, V>, Iterable<Pair<K, V>> 
 
     var root: Node<K, V>? = null
 
-    private fun findNode(key: K, cur: Node<K, V>? = root): Node<K, V>? = when {
+    override fun find(key: K): Pair<K, V>? {
 
-        cur == null || key == cur.key -> cur
-        key < cur.key -> findNode(key, cur.left)
-        else -> findNode(key, cur.right)
+        val res = findNode(key)
+
+        return if (res == null) null else Pair(res.key, res.value)
 
     }
 
-    override fun find(key: K): Pair<K, V>? {
+    private fun findNode(key: K): Node<K, V>? {
 
-        val result = findNode(key) ?: return null
+        var cur = root
 
-        return Pair(result.key, result.value)
+        while (cur != null ) {
+            if (key == cur.key) {
+                return cur
+            }
+            if (key < cur.key) {
+                cur = cur.left
+            }
+            else {
+                cur = cur.right
+            }
+        }
+
+        return null
 
     }
 
@@ -70,23 +82,34 @@ class BinarySearchTree<K : Comparable<K>, V> : Tree<K, V>, Iterable<Pair<K, V>> 
             }
         } else if (cur.left == null || cur.right == null) {
             if (cur.left == null) {
-                if (cur == parent?.left) {
+                if (parent == null) {
+                    root = cur.right
+                    cur.right!!.parent = null
+                    return
+                }
+                if (cur == parent.left) {
                     parent.left = cur.right
                 } else {
-                    parent?.right = cur.right
+                    parent.right = cur.right
                 }
                 cur.right?.parent = parent
             } else {
-                if (cur == parent?.left) {
+                if (parent == null) {
+                    root = cur.left
+                    cur.left!!.parent = null
+                    return
+                }
+                if (cur == parent.left) {
                     parent.left = cur.left
                 } else {
-                    parent?.right = cur.left
+                    parent.right = cur.left
                 }
                 cur.left?.parent = parent
             }
         } else {
             val succesor: Node<K, V> = min(cur.right)!!
             cur.key = succesor.key
+            cur.value = succesor.value
             if (succesor == succesor.parent?.left) {
                 succesor.parent?.left = succesor.right
                 if (succesor.right != null) {

@@ -1,10 +1,10 @@
-package RedBlackTree
+package AVLTree
 
 class Node<K : Comparable<K>, V>(
         var key: K,
         var value: V,
         var parent: Node<K, V>? = null,
-        var isBlack: Boolean = false
+        var height: Int = 1
 ) {
 
     var left: Node<K, V>? = null
@@ -18,9 +18,9 @@ class Node<K : Comparable<K>, V>(
         other as Node<*, *>
 
         return when {
-            value != other.value -> false
             key != other.key -> false
-            isBlack != other.isBlack -> false
+            value != other.value -> false
+            height != other.height -> false
             left != other.left -> false
             right != other.right -> false
             parent != other.parent -> false
@@ -34,8 +34,8 @@ class Node<K : Comparable<K>, V>(
         var result = key.hashCode()
 
         result = 31 * result + (value?.hashCode() ?: 0)
+        result = 31 * result + (height.hashCode())
         result = 31 * result + (parent?.hashCode() ?: 0)
-        result = 31 * result + (isBlack.hashCode())
         result = 31 * result + (left?.hashCode() ?: 0)
         result = 31 * result + (right?.hashCode() ?: 0)
 
@@ -43,41 +43,21 @@ class Node<K : Comparable<K>, V>(
 
     }
 
-    fun sibling(): Node<K, V>? = when (this) {
+    fun height(node: Node<K, V>?): Int = node?.height ?: 0
 
-        parent?.left -> parent!!.right
-        else -> parent?.left
+    fun fixHeight() {
 
-    }
-
-    fun grandparent(): Node<K, V>? = this.parent?.parent
-
-    fun uncle(): Node<K, V>? = when (this.parent) {
-
-        this.grandparent()?.left -> this.grandparent()!!.right
-        else -> this.grandparent()?.left
+        this.height = Math.max(height(this.left), height(this.right)) + 1
 
     }
 
-    fun isLeaf() = this.left == null && this.right == null
+    fun balanceFactor(node: Node<K, V>): Int = height(node.right) - height(node.left)
 
-    private fun swapColors(node: Node<K, V>?) {
-
-        val tmp = this.isBlack
-
-        if (node != null) {
-            this.isBlack = node.isBlack
-            node.isBlack = tmp
-        }
-
-    }
-
-    fun leftRotate() {
+    fun rotateLeft() {
 
         val rightChild = this.right ?: return
         val parent = this.parent
 
-        this.swapColors(rightChild)
         rightChild.left?.parent = this
         this.right = rightChild.left
         rightChild.left = this
@@ -90,14 +70,16 @@ class Node<K : Comparable<K>, V>(
         this.parent = rightChild
         rightChild.parent = parent
 
+        this.fixHeight()
+        rightChild.fixHeight()
+
     }
 
-    fun rightRotate() {
+    fun rotateRight() {
 
         val leftChild = this.left ?: return
         val parent = this.parent
 
-        this.swapColors(leftChild)
         leftChild.right?.parent = this
         this.left = leftChild.right
         leftChild.right = this
@@ -109,6 +91,23 @@ class Node<K : Comparable<K>, V>(
 
         this.parent = leftChild
         leftChild.parent = parent
+
+        this.fixHeight()
+        leftChild.fixHeight()
+
+    }
+
+    fun rotateLeftThenRight() {
+
+        this.left?.rotateLeft()
+        this.rotateRight()
+
+    }
+
+    fun rotateRightThenLeft() {
+
+        this.right?.rotateRight()
+        this.rotateLeft()
 
     }
 

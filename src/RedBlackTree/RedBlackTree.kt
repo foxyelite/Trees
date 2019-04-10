@@ -17,6 +17,7 @@ class RedBlackTree<K : Comparable<K>, V> : Tree<K, V>, Iterable<Pair<K, V>> {
     override fun find(key: K): Pair<K, V>? {
 
         val result = findNode(key) ?: return null
+
         return Pair(result.key, result.value)
 
     }

@@ -1,13 +1,13 @@
-package RedBlackTree
+package AVLTree
 
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 
 @DisplayName("Tests for Binary Search Tree")
-internal class TestRedBlackTree {
+internal class TestAVLTree {
 
-    private val Tree = RedBlackTree<Int, Int>()
+    private val Tree = AVLTree<Int, Int>()
 
     @DisplayName("Search existing key")
     @Test fun testSearchExistingKey() {
@@ -285,6 +285,10 @@ internal class TestRedBlackTree {
 
             for (i in 0 until m) {
                 Tree.delete(testInput[i])
+            }
+
+            for (x in Tree) {
+                print("${x.first} ")
             }
 
             for (i in 0 until m) {
