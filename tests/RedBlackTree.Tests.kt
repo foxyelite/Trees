@@ -9,8 +9,50 @@ internal class TestRedBlackTree {
 
     private val Tree = RedBlackTree<Int, Int>()
 
+    var maxBlackHeight: Int = -1
+
+    fun checkStructure(node: Node<Int, Int>? = Tree.root, blackHeight: Int = 1): Boolean {
+
+        if (node == null) return true
+
+        if (node.isLeaf()) {
+            if (maxBlackHeight == -1) {
+                maxBlackHeight = blackHeight
+            }
+            if (maxBlackHeight != blackHeight) {
+                return false
+            }
+            return true
+        }
+
+        if (node.isBlack == false) {
+            if (node.left?.isBlack == false || node.right?.isBlack == false) {
+                return false
+            } else {
+                return checkStructure(node.left, blackHeight + 1) &&
+                        checkStructure(node.right, blackHeight + 1)
+            }
+        } else {
+            val checkLeft: Boolean
+            val checkRight: Boolean
+            if (node.left?.isBlack == true) {
+                checkLeft = checkStructure(node.left, blackHeight + 1)
+            } else {
+                checkLeft = checkStructure(node.left, blackHeight)
+            }
+            if (node.right?.isBlack == true) {
+                checkRight = checkStructure(node.right, blackHeight + 1)
+            } else {
+                checkRight = checkStructure(node.right, blackHeight)
+            }
+            return checkLeft && checkRight
+        }
+
+    }
+
     @DisplayName("Search existing key")
-    @Test fun testSearchExistingKey() {
+    @Test
+    fun testSearchExistingKey() {
 
         for (testInputLenght in 0..1000) {
 
@@ -30,7 +72,8 @@ internal class TestRedBlackTree {
     }
 
     @DisplayName("Search in root")
-    @Test fun testSearchInRoot() {
+    @Test
+    fun testSearchInRoot() {
 
         Tree.insert(1, 1)
         assertEquals(Tree.find(1), Pair(1, 1))
@@ -38,7 +81,8 @@ internal class TestRedBlackTree {
     }
 
     @DisplayName("Search case 1")
-    @Test fun testSearchCase1() {
+    @Test
+    fun testSearchCase1() {
 
         Tree.insert(1, 1)
         Tree.insert(2, 2)
@@ -49,7 +93,8 @@ internal class TestRedBlackTree {
     }
 
     @DisplayName("Search case 2")
-    @Test fun testSearchCase2() {
+    @Test
+    fun testSearchCase2() {
 
         Tree.insert(2, 2)
         Tree.insert(1, 1)
@@ -60,7 +105,8 @@ internal class TestRedBlackTree {
     }
 
     @DisplayName("Search case 3")
-    @Test fun testSearchCase3() {
+    @Test
+    fun testSearchCase3() {
 
         Tree.insert(1, 1)
         Tree.insert(2, 2)
@@ -73,7 +119,8 @@ internal class TestRedBlackTree {
     }
 
     @DisplayName("Search case 4")
-    @Test fun testSearchCase4() {
+    @Test
+    fun testSearchCase4() {
 
         Tree.insert(3, 3)
         Tree.insert(2, 2)
@@ -87,7 +134,8 @@ internal class TestRedBlackTree {
 
 
     @DisplayName("Search case 5")
-    @Test fun testSearchCase5() {
+    @Test
+    fun testSearchCase5() {
 
         Tree.insert(2, 2)
         Tree.insert(3, 3)
@@ -100,7 +148,8 @@ internal class TestRedBlackTree {
     }
 
     @DisplayName("Search nonexisting key in empty tree")
-    @Test fun testSearchNonExistingKeyInEmptyTree() {
+    @Test
+    fun testSearchNonExistingKeyInEmptyTree() {
 
         assertNull(Tree.find(0))
         assertNull(Tree.find(101))
@@ -108,7 +157,8 @@ internal class TestRedBlackTree {
     }
 
     @DisplayName("Search non existing key in nonempty tree")
-    @Test fun testSearchNonExistingKeyInNonEmptyTree() {
+    @Test
+    fun testSearchNonExistingKeyInNonEmptyTree() {
 
         val testInput: MutableList<Int> = MutableList(100) { it + 1 }
 
@@ -124,7 +174,8 @@ internal class TestRedBlackTree {
     }
 
     @DisplayName("Insert check")
-    @Test fun testInsert() {
+    @Test
+    fun testInsert() {
 
         for (testInputLenght in 0..1000) {
 
@@ -144,8 +195,65 @@ internal class TestRedBlackTree {
 
     }
 
+    @DisplayName("Insert save structure")
+    @Test
+    fun testInsertSaveStructure() {
+
+        for (testInputLenght in 0..1000) {
+
+            val testInput: MutableList<Int> = MutableList(testInputLenght) { it + 1 }
+
+            testInput.shuffle()
+
+            for (x in testInput) {
+                Tree.insert(x, x)
+                maxBlackHeight = -1
+                assertTrue(checkStructure())
+            }
+
+        }
+
+    }
+
+    @DisplayName("Insert save structure Direct order")
+    @Test
+    fun testInsertSaveStructureDirectOrder() {
+
+        for (testInputLenght in 0..1000) {
+
+            val testInput: MutableList<Int> = MutableList(testInputLenght) { it + 1 }
+
+            for (x in testInput) {
+                Tree.insert(x, x)
+                maxBlackHeight = -1
+                assertTrue(checkStructure())
+            }
+
+        }
+
+    }
+
+    @DisplayName("Insert save structure Reverse order")
+    @Test
+    fun testInsertSaveStructureReverseOrder() {
+
+        for (testInputLenght in 0..1000) {
+
+            val testInput: MutableList<Int> = MutableList(testInputLenght) { testInputLenght - it }
+
+            for (x in testInput) {
+                Tree.insert(x, x)
+                maxBlackHeight = -1
+                assertTrue(checkStructure())
+            }
+
+        }
+
+    }
+
     @DisplayName("Delete root check")
-    @Test fun testDeleteRoot() {
+    @Test
+    fun testDeleteRoot() {
 
         Tree.insert(1, 1)
         Tree.delete(1)
@@ -154,7 +262,8 @@ internal class TestRedBlackTree {
     }
 
     @DisplayName("Delete case 1")
-    @Test fun testDeleteCase1() {
+    @Test
+    fun testDeleteCase1() {
 
         Tree.insert(1, 1)
         Tree.insert(2, 2)
@@ -167,7 +276,8 @@ internal class TestRedBlackTree {
     }
 
     @DisplayName("Delete case 2")
-    @Test fun testDeleteCase2() {
+    @Test
+    fun testDeleteCase2() {
 
         Tree.insert(2, 2)
         Tree.insert(1, 1)
@@ -180,7 +290,8 @@ internal class TestRedBlackTree {
     }
 
     @DisplayName("Delete case 3")
-    @Test fun testDeleteCase3() {
+    @Test
+    fun testDeleteCase3() {
 
         Tree.insert(1, 1)
         Tree.insert(2, 2)
@@ -195,7 +306,8 @@ internal class TestRedBlackTree {
     }
 
     @DisplayName("Delete case 4")
-    @Test fun testDeleteCase4() {
+    @Test
+    fun testDeleteCase4() {
 
         Tree.insert(3, 3)
         Tree.insert(2, 2)
@@ -211,7 +323,8 @@ internal class TestRedBlackTree {
 
 
     @DisplayName("Delete case 5")
-    @Test fun testDeleteCase5() {
+    @Test
+    fun testDeleteCase5() {
 
         Tree.insert(2, 2)
         Tree.insert(3, 3)
@@ -226,7 +339,8 @@ internal class TestRedBlackTree {
     }
 
     @DisplayName("Delete case 6")
-    @Test fun testDeleteCase6() {
+    @Test
+    fun testDeleteCase6() {
 
         Tree.insert(1, 1)
         Tree.insert(2, 2)
@@ -239,7 +353,8 @@ internal class TestRedBlackTree {
     }
 
     @DisplayName("Delete case 7")
-    @Test fun testDeleteCase7() {
+    @Test
+    fun testDeleteCase7() {
 
         Tree.insert(2, 2)
         Tree.insert(1, 1)
@@ -252,7 +367,8 @@ internal class TestRedBlackTree {
     }
 
     @DisplayName("Delete case 8")
-    @Test fun testDeleteCase8() {
+    @Test
+    fun testDeleteCase8() {
 
         Tree.insert(1, 1)
         Tree.insert(4, 4)
@@ -269,7 +385,8 @@ internal class TestRedBlackTree {
     }
 
     @DisplayName("Delete check")
-    @Test fun testDelete() {
+    @Test
+    fun testDelete() {
 
         for (testInputLength in 1..1000) {
 
@@ -299,8 +416,83 @@ internal class TestRedBlackTree {
 
     }
 
+    @DisplayName("Delete save structure")
+    @Test
+    fun testDeleteSaveStructure() {
+
+        for (testInputLength in 1..1000) {
+
+            val testInput: MutableList<Int> = MutableList(testInputLength) { it + 1 }
+
+            testInput.shuffle()
+
+            for (x in testInput) {
+                Tree.insert(x, x)
+            }
+
+            val m = testInputLength / 2
+
+            for (i in 0 until m) {
+                Tree.delete(testInput[i])
+                maxBlackHeight = -1
+                assertTrue(checkStructure())
+            }
+
+        }
+
+    }
+
+    @DisplayName("Delete save structure, direct order")
+    @Test
+    fun testDeleteSaveStructureDirectOrder() {
+
+        for (testInputLength in 1..1000) {
+
+            val testInput: MutableList<Int> = MutableList(testInputLength) { it + 1 }
+
+            for (x in testInput) {
+                Tree.insert(x, x)
+            }
+
+            val m = testInputLength / 2
+
+            for (i in 0 until m) {
+                Tree.delete(testInput[i])
+                maxBlackHeight = -1
+                assertTrue(checkStructure())
+            }
+
+        }
+
+    }
+
+    @DisplayName("Delete save structure, reverse order")
+    @Test
+    fun testDeleteSaveStructureReverseOrder() {
+
+        for (testInputLength in 1..1000) {
+
+            val testInput: MutableList<Int> = MutableList(testInputLength) { testInputLength - it }
+
+            for (x in testInput) {
+                Tree.insert(x, x)
+            }
+
+            val m = testInputLength / 2
+
+            for (i in 0 until m) {
+                Tree.delete(testInput[i])
+                maxBlackHeight = -1
+                assertTrue(checkStructure())
+            }
+
+        }
+
+    }
+
     @DisplayName("Iterate empty tree")
-    @Test fun testIterateEmptyTree() {
+    @Test
+    fun testIterateEmptyTree() {
 
         for (i in Tree)
             assertEquals(-1, 1)
@@ -308,7 +500,8 @@ internal class TestRedBlackTree {
     }
 
     @DisplayName("Iterate normal tree")
-    @Test fun testIterateNormal() {
+    @Test
+    fun testIterateNormal() {
 
         for (testInputLength in 1..1000) {
 
