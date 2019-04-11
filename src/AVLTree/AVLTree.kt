@@ -14,14 +14,6 @@ class AVLTree<K : Comparable<K>, V> : Tree<K, V>, Iterable<Pair<K, V>> {
 
     }
 
-    private fun findNode(key: K, cur: Node<K, V>? = root): Node<K, V>? = when {
-
-        cur == null || key == cur.key -> cur
-        key < cur.key -> findNode(key, cur.left)
-        else -> findNode(key, cur.right)
-
-    }
-
     override fun insert(key: K, value: V) {
 
         var parent: Node<K, V>? = null
@@ -56,7 +48,41 @@ class AVLTree<K : Comparable<K>, V> : Tree<K, V>, Iterable<Pair<K, V>> {
 
     override fun delete(key: K) {
 
-        if (root == null || find(key) == null) return
+        val node = findNode(key) ?: return
+        deleteNode(node)
+
+    }
+
+    override fun iterator(): Iterator<Pair<K, V>> {
+
+        return (object : Iterator<Pair<K, V>> {
+
+            var cur: Node<K, V>? = min(root)
+            var prev: Node<K, V>? = min(root)
+            var last: Node<K, V>? = max(root)
+
+            override fun hasNext(): Boolean = cur != null && cur!!.key <= last!!.key
+
+            override fun next(): Pair<K, V> {
+                prev = cur
+                cur = next(cur)
+                return Pair(prev!!.key, prev!!.value)
+            }
+        })
+
+    }
+
+    private fun findNode(key: K, cur: Node<K, V>? = root): Node<K, V>? = when {
+
+        cur == null || key == cur.key -> cur
+        key < cur.key -> findNode(key, cur.left)
+        else -> findNode(key, cur.right)
+
+    }
+
+    private fun deleteNode(node: Node<K, V>) {
+
+        val key = node.key
 
         var cur: Node<K, V>? = root
         var parent: Node<K, V>? = root
@@ -70,12 +96,11 @@ class AVLTree<K : Comparable<K>, V> : Tree<K, V>, Iterable<Pair<K, V>> {
             if (key == cur.key) delNode = cur
         }
 
-        if (delNode == null) return
-
-        delNode.key = cur!!.key
-        delNode.value = cur!!.value
+        delNode!!.key = cur!!.key
+        delNode.value = cur.value
 
         child = if (cur.left != null) cur.left else cur.right
+
         if (root!!.key == key) {
             root = child
             child?.parent = null
@@ -83,8 +108,10 @@ class AVLTree<K : Comparable<K>, V> : Tree<K, V>, Iterable<Pair<K, V>> {
         } else {
             if (parent!!.left == cur) {
                 parent.left = child
+                child?.parent = parent
             } else {
                 parent.right = child
+                child?.parent = parent
             }
             rebalance(parent)
         }
@@ -93,24 +120,23 @@ class AVLTree<K : Comparable<K>, V> : Tree<K, V>, Iterable<Pair<K, V>> {
 
     private fun rebalance(node: Node<K, V>) {
         node.fixHeight()
-        var cur = node
-        if (cur.balanceFactor(cur) == -2) {
-            if (cur.height(cur.left!!.left) >= cur.height(cur.left!!.right)) {
-                cur.rotateRight()
+        if (node.balanceFactor(node) == -2) {
+            if (node.height(node.left!!.left) >= node.height(node.left!!.right)) {
+                node.rotateRight()
             } else {
-                cur.rotateLeftThenRight()
+                node.rotateLeftThenRight()
             }
-        } else if (cur.balanceFactor(cur) == 2) {
-            if (cur.height(cur.right!!.right) >= cur.height(cur.right!!.left)) {
-                cur.rotateLeft()
+        } else if (node.balanceFactor(node) == 2) {
+            if (node.height(node.right!!.right) >= node.height(node.right!!.left)) {
+                node.rotateLeft()
             } else {
-                cur.rotateRightThenLeft()
+                node.rotateRightThenLeft()
             }
         }
-        if (cur.parent != null) {
-            rebalance(cur.parent!!)
+        if (node.parent != null) {
+            rebalance(node.parent!!)
         } else {
-            root = cur
+            root = node
         }
     }
 
@@ -131,25 +157,6 @@ class AVLTree<K : Comparable<K>, V> : Tree<K, V>, Iterable<Pair<K, V>> {
         }
 
         return next.parent
-
-    }
-
-    override fun iterator(): Iterator<Pair<K, V>> {
-
-        return (object : Iterator<Pair<K, V>> {
-
-            var cur: Node<K, V>? = min(root)
-            var prev: Node<K, V>? = min(root)
-            var last: Node<K, V>? = max(root)
-
-            override fun hasNext(): Boolean = cur != null && cur!!.key <= last!!.key
-
-            override fun next(): Pair<K, V> {
-                prev = cur
-                cur = next(cur)
-                return Pair(prev!!.key, prev!!.value)
-            }
-        })
 
     }
 

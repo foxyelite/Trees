@@ -6,14 +6,6 @@ class RedBlackTree<K : Comparable<K>, V> : Tree<K, V>, Iterable<Pair<K, V>> {
 
     var root: Node<K, V>? = null
 
-    private fun findNode(key: K, cur: Node<K, V>? = root): Node<K, V>? = when {
-
-        cur == null || key == cur.key -> cur
-        key < cur.key -> findNode(key, cur.left)
-        else -> findNode(key, cur.right)
-
-    }
-
     override fun find(key: K): Pair<K, V>? {
 
         val result = findNode(key) ?: return null
@@ -51,6 +43,40 @@ class RedBlackTree<K : Comparable<K>, V> : Tree<K, V>, Iterable<Pair<K, V>> {
             parent.right = Node(key, value, parent, false)
             fixInsert(parent.right)
         }
+
+    }
+
+    override fun delete(key: K) {
+
+        val node = findNode(key) ?: return
+        deleteNode(node)
+
+    }
+
+    override fun iterator(): Iterator<Pair<K, V>> {
+
+        return (object : Iterator<Pair<K, V>> {
+
+            var cur: Node<K, V>? = min(root)
+            var prev: Node<K, V>? = min(root)
+            var last: Node<K, V>? = max(root)
+
+            override fun hasNext(): Boolean = cur != null && cur!!.key <= last!!.key
+
+            override fun next(): Pair<K, V> {
+                prev = cur
+                cur = next(cur)
+                return Pair(prev!!.key, prev!!.value)
+            }
+        })
+
+    }
+
+    private fun findNode(key: K, cur: Node<K, V>? = root): Node<K, V>? = when {
+
+        cur == null || key == cur.key -> cur
+        key < cur.key -> findNode(key, cur.left)
+        else -> findNode(key, cur.right)
 
     }
 
@@ -110,13 +136,6 @@ class RedBlackTree<K : Comparable<K>, V> : Tree<K, V>, Iterable<Pair<K, V>> {
         }
 
         root?.isBlack = true
-
-    }
-
-    override fun delete(key: K) {
-
-        val node = findNode(key) ?: return
-        deleteNode(node)
 
     }
 
@@ -265,6 +284,7 @@ class RedBlackTree<K : Comparable<K>, V> : Tree<K, V>, Iterable<Pair<K, V>> {
 
     private fun max(cur: Node<K, V>?): Node<K, V>? = if (cur?.right == null) cur else max(cur.right)
 
+
     private fun next(cur: Node<K, V>?): Node<K, V>? {
 
         var next = cur ?: return null
@@ -278,26 +298,6 @@ class RedBlackTree<K : Comparable<K>, V> : Tree<K, V>, Iterable<Pair<K, V>> {
         }
 
         return next.parent
-
-    }
-
-
-    override fun iterator(): Iterator<Pair<K, V>> {
-
-        return (object : Iterator<Pair<K, V>> {
-
-            var cur: Node<K, V>? = min(root)
-            var prev: Node<K, V>? = min(root)
-            var last: Node<K, V>? = max(root)
-
-            override fun hasNext(): Boolean = cur != null && cur!!.key <= last!!.key
-
-            override fun next(): Pair<K, V> {
-                prev = cur
-                cur = next(cur)
-                return Pair(prev!!.key, prev!!.value)
-            }
-        })
 
     }
 

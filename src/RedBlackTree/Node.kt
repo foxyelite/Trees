@@ -18,8 +18,8 @@ class Node<K : Comparable<K>, V>(
         other as Node<*, *>
 
         return when {
-            value != other.value -> false
             key != other.key -> false
+            value != other.value -> false
             isBlack != other.isBlack -> false
             left != other.left -> false
             right != other.right -> false
@@ -50,7 +50,7 @@ class Node<K : Comparable<K>, V>(
 
     }
 
-    fun grandparent(): Node<K, V>? = this.parent?.parent
+    private fun grandparent(): Node<K, V>? = this.parent?.parent
 
     fun uncle(): Node<K, V>? = when (this.parent) {
 

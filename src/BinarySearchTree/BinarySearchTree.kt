@@ -14,26 +14,6 @@ class BinarySearchTree<K : Comparable<K>, V> : Tree<K, V>, Iterable<Pair<K, V>> 
 
     }
 
-    private fun findNode(key: K): Node<K, V>? {
-
-        var cur = root
-
-        while (cur != null ) {
-            if (key == cur.key) {
-                return cur
-            }
-            if (key < cur.key) {
-                cur = cur.left
-            }
-            else {
-                cur = cur.right
-            }
-        }
-
-        return null
-
-    }
-
     override fun insert(key: K, value: V) {
 
         var parent: Node<K, V>? = null
@@ -66,7 +46,48 @@ class BinarySearchTree<K : Comparable<K>, V> : Tree<K, V>, Iterable<Pair<K, V>> 
 
     override fun delete(key: K) {
 
-        val cur: Node<K, V> = findNode(key) ?: return
+        val node = findNode(key) ?: return
+        deleteNode(node)
+
+    }
+
+    override fun iterator(): Iterator<Pair<K, V>> {
+
+        return (object : Iterator<Pair<K, V>> {
+
+            var cur: Node<K, V>? = min(root)
+            var prev: Node<K, V>? = min(root)
+            var last: Node<K, V>? = max(root)
+
+            override fun hasNext(): Boolean = cur != null && cur!!.key <= last!!.key
+
+            override fun next(): Pair<K, V> {
+                prev = cur
+                cur = next(cur)
+                return Pair(prev!!.key, prev!!.value)
+            }
+        })
+
+    }
+
+    private fun findNode(key: K): Node<K, V>? {
+
+        var cur = root
+
+        while (cur != null ) {
+            if (key == cur.key) {
+                return cur
+            }
+            cur = if (key < cur.key) cur.left else cur.right
+        }
+
+        return null
+
+    }
+
+    private fun deleteNode(node: Node<K, V>) {
+
+        val cur: Node<K, V> = node
         val parent: Node<K, V>? = cur.parent
 
         if (cur.left == null && cur.right == null) {
@@ -124,19 +145,9 @@ class BinarySearchTree<K : Comparable<K>, V> : Tree<K, V>, Iterable<Pair<K, V>> 
 
     }
 
-    private fun min(cur: Node<K, V>?): Node<K, V>? = when {
+    private fun min(cur: Node<K, V>?): Node<K, V>? = if (cur?.left == null) cur else min(cur.left)
 
-        cur?.left == null -> cur
-        else -> min(cur.left)
-
-    }
-
-    private fun max(cur: Node<K, V>?): Node<K, V>? = when {
-
-        cur?.right == null -> cur
-        else -> max(cur.right)
-
-    }
+    private fun max(cur: Node<K, V>?): Node<K, V>? = if (cur?.right == null) cur else max(cur.right)
 
     private fun next(cur: Node<K, V>?): Node<K, V>? {
 
@@ -151,25 +162,6 @@ class BinarySearchTree<K : Comparable<K>, V> : Tree<K, V>, Iterable<Pair<K, V>> 
         }
 
         return next.parent
-
-    }
-
-    override fun iterator(): Iterator<Pair<K, V>> {
-
-        return (object : Iterator<Pair<K, V>> {
-
-            var cur: Node<K, V>? = min(root)
-            var prev: Node<K, V>? = min(root)
-            var last: Node<K, V>? = max(root)
-
-            override fun hasNext(): Boolean = cur != null && cur!!.key <= last!!.key
-
-            override fun next(): Pair<K, V> {
-                prev = cur
-                cur = next(cur)
-                return Pair(prev!!.key, prev!!.value)
-            }
-        })
 
     }
 

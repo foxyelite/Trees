@@ -9,9 +9,9 @@ internal class TestRedBlackTree {
 
     private val Tree = RedBlackTree<Int, Int>()
 
-    var maxBlackHeight: Int = -1
+    private var maxBlackHeight: Int = -1
 
-    fun checkStructure(node: Node<Int, Int>? = Tree.root, blackHeight: Int = 1): Boolean {
+    private fun checkStructure(node: Node<Int, Int>? = Tree.root, blackHeight: Int = 1): Boolean {
 
         if (node == null) return true
 
@@ -25,25 +25,23 @@ internal class TestRedBlackTree {
             return true
         }
 
-        if (node.isBlack == false) {
-            if (node.left?.isBlack == false || node.right?.isBlack == false) {
-                return false
+        if (!node.isBlack) {
+            return if (node.left?.isBlack == false || node.right?.isBlack == false) {
+                false
             } else {
-                return checkStructure(node.left, blackHeight + 1) &&
+                checkStructure(node.left, blackHeight + 1) &&
                         checkStructure(node.right, blackHeight + 1)
             }
         } else {
-            val checkLeft: Boolean
-            val checkRight: Boolean
-            if (node.left?.isBlack == true) {
-                checkLeft = checkStructure(node.left, blackHeight + 1)
+            val checkLeft: Boolean = if (node.left?.isBlack == true) {
+                checkStructure(node.left, blackHeight + 1)
             } else {
-                checkLeft = checkStructure(node.left, blackHeight)
+                checkStructure(node.left, blackHeight)
             }
-            if (node.right?.isBlack == true) {
-                checkRight = checkStructure(node.right, blackHeight + 1)
+            val checkRight: Boolean = if (node.right?.isBlack == true) {
+                checkStructure(node.right, blackHeight + 1)
             } else {
-                checkRight = checkStructure(node.right, blackHeight)
+                checkStructure(node.right, blackHeight)
             }
             return checkLeft && checkRight
         }

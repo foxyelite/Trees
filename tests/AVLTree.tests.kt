@@ -9,16 +9,16 @@ internal class TestAVLTree {
 
     private val Tree = AVLTree<Int, Int>()
 
-    fun checkStructure(node: Node<Int, Int>? = Tree.root): Boolean {
+    private fun checkStructure(node: Node<Int, Int>? = Tree.root): Boolean {
 
         if (node == null) return true
 
-        if (node.balanceFactor(node) in -1..1) {
+        return if (node.balanceFactor(node) in -1..1) {
             val checkLeft = checkStructure(node.left)
             val checkRight = checkStructure(node.right)
-            return checkLeft && checkRight
+            checkLeft && checkRight
         } else {
-            return false
+            false
         }
 
 
