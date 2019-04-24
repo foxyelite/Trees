@@ -1,34 +1,24 @@
-package BinarySearchTree
+package AVLTree
 
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 
-@DisplayName("Tests for Binary Search Tree")
-internal class TestBinarySearchTree {
+@DisplayName("Tests for AVL Tree")
+internal class TestAVLTree {
 
-    private val Tree = BinarySearchTree<Int, Int>()
+    private val Tree = AVLTree<Int, Int>()
 
     private fun checkStructure(node: Node<Int, Int>? = Tree.root): Boolean {
 
         if (node == null) return true
 
-        val checkLeft = checkStructure(node.left)
-        val checkRight = checkStructure(node.right)
-
-        return if (node.left == null && node.right == null) {
-            true
-        } else if (node.left == null || node.right == null) {
-            if (node.left == null) {
-                (node.key < node.right!!.key) && checkRight
-            }
-            else {
-                (node.key > node.left!!.key) && checkLeft
-            }
-        }
-        else {
-            (node.left!!.key < node.key && node.key < node.right!!.key) &&
-                    checkLeft && checkRight
+        return if (node.balanceFactor(node) in -1..1) {
+            val checkLeft = checkStructure(node.left)
+            val checkRight = checkStructure(node.right)
+            checkLeft && checkRight
+        } else {
+            false
         }
 
     }
@@ -37,18 +27,18 @@ internal class TestBinarySearchTree {
     @Test
     fun testSearchExistingKey() {
 
-        for (testInputLenght in 0..1000) {
+        for (testInputLength in 0..1000) {
 
-            val testInput: MutableList<Int> = MutableList(testInputLenght) { it + 1 }
+            val testInput: MutableList<Int> = MutableList(testInputLength) { it + 1 }
 
             testInput.shuffle()
 
-            for (x in testInput) {
-                Tree.insert(x, x)
+            for (data in testInput) {
+                Tree.insert(data, data)
             }
 
-            for (x in testInput) {
-                assertEquals(Tree.find(x), Pair(x, x))
+            for (data in testInput) {
+                assertEquals(Pair(data, data), Tree.find(data))
             }
         }
 
@@ -59,7 +49,8 @@ internal class TestBinarySearchTree {
     fun testSearchInRoot() {
 
         Tree.insert(1, 1)
-        assertEquals(Tree.find(1), Pair(1, 1))
+
+        assertEquals(Pair(1, 1), Tree.find(1))
 
     }
 
@@ -70,8 +61,8 @@ internal class TestBinarySearchTree {
         Tree.insert(1, 1)
         Tree.insert(2, 2)
 
-        assertEquals(Tree.find(2), Pair(2, 2))
-        assertEquals(Tree.find(1), Pair(1, 1))
+        assertEquals(Pair(2, 2), Tree.find(2))
+        assertEquals(Pair(1, 1), Tree.find(1))
 
     }
 
@@ -82,8 +73,8 @@ internal class TestBinarySearchTree {
         Tree.insert(2, 2)
         Tree.insert(1, 1)
 
-        assertEquals(Tree.find(2), Pair(2, 2))
-        assertEquals(Tree.find(1), Pair(1, 1))
+        assertEquals(Pair(2, 2), Tree.find(2))
+        assertEquals(Pair(1, 1), Tree.find(1))
 
     }
 
@@ -95,9 +86,9 @@ internal class TestBinarySearchTree {
         Tree.insert(2, 2)
         Tree.insert(3, 3)
 
-        assertEquals(Tree.find(3), Pair(3, 3))
-        assertEquals(Tree.find(2), Pair(2, 2))
-        assertEquals(Tree.find(1), Pair(1, 1))
+        assertEquals(Pair(3, 3), Tree.find(3))
+        assertEquals(Pair(2, 2), Tree.find(2))
+        assertEquals(Pair(1, 1), Tree.find(1))
 
     }
 
@@ -109,9 +100,9 @@ internal class TestBinarySearchTree {
         Tree.insert(2, 2)
         Tree.insert(1, 1)
 
-        assertEquals(Tree.find(3), Pair(3, 3))
-        assertEquals(Tree.find(2), Pair(2, 2))
-        assertEquals(Tree.find(1), Pair(1, 1))
+        assertEquals(Pair(3, 3), Tree.find(3))
+        assertEquals(Pair(2, 2), Tree.find(2))
+        assertEquals(Pair(1, 1), Tree.find(1))
 
     }
 
@@ -124,13 +115,13 @@ internal class TestBinarySearchTree {
         Tree.insert(3, 3)
         Tree.insert(1, 1)
 
-        assertEquals(Tree.find(3), Pair(3, 3))
-        assertEquals(Tree.find(2), Pair(2, 2))
-        assertEquals(Tree.find(1), Pair(1, 1))
+        assertEquals(Pair(3, 3), Tree.find(3))
+        assertEquals(Pair(2, 2), Tree.find(2))
+        assertEquals(Pair(1, 1), Tree.find(1))
 
     }
 
-    @DisplayName("Search nonexisting key in empty tree")
+    @DisplayName("Search nonexistent key in empty tree")
     @Test
     fun testSearchNonExistingKeyInEmptyTree() {
 
@@ -147,8 +138,8 @@ internal class TestBinarySearchTree {
 
         testInput.shuffle()
 
-        for (x in testInput) {
-            Tree.insert(x, x)
+        for (data in testInput) {
+            Tree.insert(data, data)
         }
 
         assertNull(Tree.find(0))
@@ -160,18 +151,18 @@ internal class TestBinarySearchTree {
     @Test
     fun testInsert() {
 
-        for (testInputLenght in 0..1000) {
+        for (testInputLength in 0..1000) {
 
-            val testInput: MutableList<Int> = MutableList(testInputLenght) { it + 1 }
+            val testInput: MutableList<Int> = MutableList(testInputLength) { it + 1 }
 
             testInput.shuffle()
 
-            for (x in testInput) {
-                Tree.insert(x, x)
+            for (data in testInput) {
+                Tree.insert(data, data)
             }
 
-            for (x in testInput) {
-                assertEquals(Tree.find(x), Pair(x, x))
+            for (data in testInput) {
+                assertEquals(Pair(data, data), Tree.find(data))
             }
 
         }
@@ -182,14 +173,14 @@ internal class TestBinarySearchTree {
     @Test
     fun testInsertSaveStructure() {
 
-        for (testInputLenght in 0..1000) {
+        for (testInputLength in 0..1000) {
 
-            val testInput: MutableList<Int> = MutableList(testInputLenght) { it + 1 }
+            val testInput: MutableList<Int> = MutableList(testInputLength) { it + 1 }
 
             testInput.shuffle()
 
-            for (x in testInput) {
-                Tree.insert(x, x)
+            for (data in testInput) {
+                Tree.insert(data, data)
                 assertTrue(checkStructure())
             }
 
@@ -201,12 +192,12 @@ internal class TestBinarySearchTree {
     @Test
     fun testInsertSaveStructureDirectOrder() {
 
-        for (testInputLenght in 0..1000) {
+        for (testInputLength in 0..1000) {
 
-            val testInput: MutableList<Int> = MutableList(testInputLenght) { it + 1 }
+            val testInput: MutableList<Int> = MutableList(testInputLength) { it + 1 }
 
-            for (x in testInput) {
-                Tree.insert(x, x)
+            for (data in testInput) {
+                Tree.insert(data, data)
                 assertTrue(checkStructure())
             }
 
@@ -218,9 +209,9 @@ internal class TestBinarySearchTree {
     @Test
     fun testInsertSaveStructureReverseOrder() {
 
-        for (testInputLenght in 0..1000) {
+        for (testInputLength in 0..1000) {
 
-            val testInput: MutableList<Int> = MutableList(testInputLenght) { testInputLenght - it }
+            val testInput: MutableList<Int> = MutableList(testInputLength) { testInputLength - it }
 
             for (x in testInput) {
                 Tree.insert(x, x)
@@ -236,7 +227,9 @@ internal class TestBinarySearchTree {
     fun testDeleteRoot() {
 
         Tree.insert(1, 1)
+
         Tree.delete(1)
+
         assertNull(Tree.root)
 
     }
@@ -374,8 +367,8 @@ internal class TestBinarySearchTree {
 
             testInput.shuffle()
 
-            for (x in testInput) {
-                Tree.insert(x, x)
+            for (data in testInput) {
+                Tree.insert(data, data)
             }
 
             val m = testInputLength / 2
@@ -406,8 +399,8 @@ internal class TestBinarySearchTree {
 
             testInput.shuffle()
 
-            for (x in testInput) {
-                Tree.insert(x, x)
+            for (data in testInput) {
+                Tree.insert(data, data)
             }
 
             val m = testInputLength / 2
@@ -429,8 +422,8 @@ internal class TestBinarySearchTree {
 
             val testInput: MutableList<Int> = MutableList(testInputLength) { it + 1 }
 
-            for (x in testInput) {
-                Tree.insert(x, x)
+            for (data in testInput) {
+                Tree.insert(data, data)
             }
 
             val m = testInputLength / 2
@@ -452,8 +445,8 @@ internal class TestBinarySearchTree {
 
             val testInput: MutableList<Int> = MutableList(testInputLength) { testInputLength - it }
 
-            for (x in testInput) {
-                Tree.insert(x, x)
+            for (data in testInput) {
+                Tree.insert(data, data)
             }
 
             val m = testInputLength / 2
@@ -486,8 +479,8 @@ internal class TestBinarySearchTree {
 
             testInput.shuffle()
 
-            for (x in testInput) {
-                Tree.insert(x, x)
+            for (data in testInput) {
+                Tree.insert(data, data)
             }
 
             var cur = 0

@@ -21,9 +21,9 @@ class Node<K : Comparable<K>, V>(
             key != other.key -> false
             value != other.value -> false
             isBlack != other.isBlack -> false
-            left != other.left -> false
-            right != other.right -> false
-            parent != other.parent -> false
+            this.pullLeft() != other.pullLeft() -> false
+            this.pullRight() != other.pullRight() -> false
+            this.pullParent() != other.pullParent() -> false
             else -> true
         }
 
@@ -34,45 +34,16 @@ class Node<K : Comparable<K>, V>(
         var result = key.hashCode()
 
         result = 31 * result + (value?.hashCode() ?: 0)
-        result = 31 * result + (parent?.hashCode() ?: 0)
         result = 31 * result + (isBlack.hashCode())
-        result = 31 * result + (left?.hashCode() ?: 0)
-        result = 31 * result + (right?.hashCode() ?: 0)
+        result = 31 * result + (this.pullParent()?.hashCode() ?: 0)
+        result = 31 * result + (this.pullLeft()?.hashCode() ?: 0)
+        result = 31 * result + (this.pullRight()?.hashCode() ?: 0)
 
         return result
 
     }
 
-    fun sibling(): Node<K, V>? = when (this) {
-
-        parent?.left -> parent!!.right
-        else -> parent?.left
-
-    }
-
-    private fun grandparent(): Node<K, V>? = this.parent?.parent
-
-    fun uncle(): Node<K, V>? = when (this.parent) {
-
-        this.grandparent()?.left -> this.grandparent()!!.right
-        else -> this.grandparent()?.left
-
-    }
-
-    fun isLeaf() = this.left == null && this.right == null
-
-    private fun swapColors(node: Node<K, V>?) {
-
-        val tmp = this.isBlack
-
-        if (node != null) {
-            this.isBlack = node.isBlack
-            node.isBlack = tmp
-        }
-
-    }
-
-    fun leftRotate() {
+    fun rotateLeft() {
 
         val rightChild = this.right ?: return
         val parent = this.parent
@@ -92,7 +63,7 @@ class Node<K : Comparable<K>, V>(
 
     }
 
-    fun rightRotate() {
+    fun rotateRight() {
 
         val leftChild = this.left ?: return
         val parent = this.parent
@@ -109,6 +80,47 @@ class Node<K : Comparable<K>, V>(
 
         this.parent = leftChild
         leftChild.parent = parent
+
+    }
+
+    internal fun sibling(): Node<K, V>? = when (this) {
+
+        parent?.left -> parent!!.right
+        else -> parent?.left
+
+    }
+
+    internal fun uncle(): Node<K, V>? = when (this.parent) {
+
+        this.grandparent()?.left -> this.grandparent()!!.right
+        else -> this.grandparent()?.left
+
+    }
+
+    internal fun isLeaf():Boolean = this.left == null && this.right == null
+
+    private fun pullParent(): Node<K, V>? = if (this.parent == null) null else {
+        Node(this.parent!!.key, this.parent!!.value, null)
+    }
+
+    private fun pullLeft(): Node<K, V>? = if (this.left == null) null else {
+        Node(this.left!!.key, this.left!!.value, null)
+    }
+
+    private fun pullRight(): Node<K, V>? = if (this.right == null) null else {
+        Node(this.right!!.key, this.right!!.value, null)
+    }
+
+    private fun grandparent(): Node<K, V>? = this.parent?.parent
+
+    private fun swapColors(node: Node<K, V>?) {
+
+        val tmp = this.isBlack
+
+        if (node != null) {
+            this.isBlack = node.isBlack
+            node.isBlack = tmp
+        }
 
     }
 

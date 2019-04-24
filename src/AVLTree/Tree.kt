@@ -49,6 +49,7 @@ class AVLTree<K : Comparable<K>, V> : Tree<K, V>, Iterable<Pair<K, V>> {
     override fun delete(key: K) {
 
         val node = findNode(key) ?: return
+
         deleteNode(node)
 
     }
@@ -64,19 +65,30 @@ class AVLTree<K : Comparable<K>, V> : Tree<K, V>, Iterable<Pair<K, V>> {
             override fun hasNext(): Boolean = cur != null && cur!!.key <= last!!.key
 
             override fun next(): Pair<K, V> {
+
                 prev = cur
                 cur = next(cur)
+
                 return Pair(prev!!.key, prev!!.value)
+
             }
+
         })
 
     }
 
-    private fun findNode(key: K, cur: Node<K, V>? = root): Node<K, V>? = when {
+    private fun findNode(key: K): Node<K, V>? {
 
-        cur == null || key == cur.key -> cur
-        key < cur.key -> findNode(key, cur.left)
-        else -> findNode(key, cur.right)
+        var cur = root
+
+        while (cur != null ) {
+            if (key == cur.key) {
+                return cur
+            }
+            cur = if (key < cur.key) cur.left else cur.right
+        }
+
+        return null
 
     }
 
@@ -119,7 +131,9 @@ class AVLTree<K : Comparable<K>, V> : Tree<K, V>, Iterable<Pair<K, V>> {
     }
 
     private fun rebalance(node: Node<K, V>) {
+
         node.fixHeight()
+
         if (node.balanceFactor(node) == -2) {
             if (node.height(node.left!!.left) >= node.height(node.left!!.right)) {
                 node.rotateRight()
@@ -138,6 +152,7 @@ class AVLTree<K : Comparable<K>, V> : Tree<K, V>, Iterable<Pair<K, V>> {
         } else {
             root = node
         }
+
     }
 
     private fun min(cur: Node<K, V>?): Node<K, V>? = if (cur?.left == null) cur else min(cur.left)

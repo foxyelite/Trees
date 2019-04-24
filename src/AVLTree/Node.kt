@@ -10,6 +10,18 @@ class Node<K : Comparable<K>, V>(
     var left: Node<K, V>? = null
     var right: Node<K, V>? = null
 
+    private fun pullParent(): Node<K, V>? = if (this.parent == null) null else {
+        Node(this.parent!!.key, this.parent!!.value, null)
+    }
+
+    private fun pullLeft(): Node<K, V>? = if (this.left == null) null else {
+        Node(this.left!!.key, this.left!!.value, null)
+    }
+
+    private fun pullRight(): Node<K, V>? = if (this.right == null) null else {
+        Node(this.right!!.key, this.right!!.value, null)
+    }
+
     override fun equals(other: Any?): Boolean {
 
         if (this === other) return true
@@ -21,9 +33,9 @@ class Node<K : Comparable<K>, V>(
             key != other.key -> false
             value != other.value -> false
             height != other.height -> false
-            left != other.left -> false
-            right != other.right -> false
-            parent != other.parent -> false
+            this.pullLeft() != other.pullLeft() -> false
+            this.pullRight() != other.pullRight() -> false
+            this.pullParent() != other.pullParent() -> false
             else -> true
         }
 
@@ -35,23 +47,13 @@ class Node<K : Comparable<K>, V>(
 
         result = 31 * result + (value?.hashCode() ?: 0)
         result = 31 * result + (height.hashCode())
-        result = 31 * result + (parent?.hashCode() ?: 0)
-        result = 31 * result + (left?.hashCode() ?: 0)
-        result = 31 * result + (right?.hashCode() ?: 0)
+        result = 31 * result + (this.pullParent()?.hashCode() ?: 0)
+        result = 31 * result + (this.pullLeft()?.hashCode() ?: 0)
+        result = 31 * result + (this.pullRight()?.hashCode() ?: 0)
 
         return result
 
     }
-
-    fun height(node: Node<K, V>?): Int = node?.height ?: 0
-
-    fun fixHeight() {
-
-        this.height = Math.max(height(this.left), height(this.right)) + 1
-
-    }
-
-    fun balanceFactor(node: Node<K, V>): Int = height(node.right) - height(node.left)
 
     fun rotateLeft() {
 
@@ -72,6 +74,7 @@ class Node<K : Comparable<K>, V>(
 
         this.fixHeight()
         rightChild.fixHeight()
+        rightChild.parent?.fixHeight()
 
     }
 
@@ -94,7 +97,7 @@ class Node<K : Comparable<K>, V>(
 
         this.fixHeight()
         leftChild.fixHeight()
-
+        leftChild.parent?.fixHeight()
     }
 
     fun rotateLeftThenRight() {
@@ -110,5 +113,15 @@ class Node<K : Comparable<K>, V>(
         this.rotateLeft()
 
     }
+
+    internal fun height(node: Node<K, V>?): Int = node?.height ?: 0
+
+    internal fun fixHeight() {
+
+        this.height = Math.max(height(this.left), height(this.right)) + 1
+
+    }
+
+    internal fun balanceFactor(node: Node<K, V>): Int = height(node.right) - height(node.left)
 
 }

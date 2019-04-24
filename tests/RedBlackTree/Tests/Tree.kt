@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 
-@DisplayName("Tests for Binary Search Tree")
+@DisplayName("Tests for Red Black Tree")
 internal class TestRedBlackTree {
 
     private val Tree = RedBlackTree<Int, Int>()
@@ -52,18 +52,18 @@ internal class TestRedBlackTree {
     @Test
     fun testSearchExistingKey() {
 
-        for (testInputLenght in 0..1000) {
+        for (testInputLength in 0..1000) {
 
-            val testInput: MutableList<Int> = MutableList(testInputLenght) { it + 1 }
+            val testInput: MutableList<Int> = MutableList(testInputLength) { it + 1 }
 
             testInput.shuffle()
 
-            for (x in testInput) {
-                Tree.insert(x, x)
+            for (data in testInput) {
+                Tree.insert(data, data)
             }
 
-            for (x in testInput) {
-                assertEquals(Tree.find(x), Pair(x, x))
+            for (data in testInput) {
+                assertEquals(Pair(data, data), Tree.find(data))
             }
         }
 
@@ -74,7 +74,8 @@ internal class TestRedBlackTree {
     fun testSearchInRoot() {
 
         Tree.insert(1, 1)
-        assertEquals(Tree.find(1), Pair(1, 1))
+
+        assertEquals(Pair(1, 1), Tree.find(1))
 
     }
 
@@ -85,8 +86,8 @@ internal class TestRedBlackTree {
         Tree.insert(1, 1)
         Tree.insert(2, 2)
 
-        assertEquals(Tree.find(2), Pair(2, 2))
-        assertEquals(Tree.find(1), Pair(1, 1))
+        assertEquals(Pair(2, 2), Tree.find(2))
+        assertEquals(Pair(1, 1), Tree.find(1))
 
     }
 
@@ -97,8 +98,8 @@ internal class TestRedBlackTree {
         Tree.insert(2, 2)
         Tree.insert(1, 1)
 
-        assertEquals(Tree.find(2), Pair(2, 2))
-        assertEquals(Tree.find(1), Pair(1, 1))
+        assertEquals(Pair(2, 2), Tree.find(2))
+        assertEquals(Pair(1, 1), Tree.find(1))
 
     }
 
@@ -110,9 +111,9 @@ internal class TestRedBlackTree {
         Tree.insert(2, 2)
         Tree.insert(3, 3)
 
-        assertEquals(Tree.find(3), Pair(3, 3))
-        assertEquals(Tree.find(2), Pair(2, 2))
-        assertEquals(Tree.find(1), Pair(1, 1))
+        assertEquals(Pair(3, 3), Tree.find(3))
+        assertEquals(Pair(2, 2), Tree.find(2))
+        assertEquals(Pair(1, 1), Tree.find(1))
 
     }
 
@@ -124,9 +125,9 @@ internal class TestRedBlackTree {
         Tree.insert(2, 2)
         Tree.insert(1, 1)
 
-        assertEquals(Tree.find(3), Pair(3, 3))
-        assertEquals(Tree.find(2), Pair(2, 2))
-        assertEquals(Tree.find(1), Pair(1, 1))
+        assertEquals(Pair(3, 3), Tree.find(3))
+        assertEquals(Pair(2, 2), Tree.find(2))
+        assertEquals(Pair(1, 1), Tree.find(1))
 
     }
 
@@ -139,13 +140,13 @@ internal class TestRedBlackTree {
         Tree.insert(3, 3)
         Tree.insert(1, 1)
 
-        assertEquals(Tree.find(3), Pair(3, 3))
-        assertEquals(Tree.find(2), Pair(2, 2))
-        assertEquals(Tree.find(1), Pair(1, 1))
+        assertEquals(Pair(3, 3), Tree.find(3))
+        assertEquals(Pair(2, 2), Tree.find(2))
+        assertEquals(Pair(1, 1), Tree.find(1))
 
     }
 
-    @DisplayName("Search nonexisting key in empty tree")
+    @DisplayName("Search nonexistent key in empty tree")
     @Test
     fun testSearchNonExistingKeyInEmptyTree() {
 
@@ -162,8 +163,8 @@ internal class TestRedBlackTree {
 
         testInput.shuffle()
 
-        for (x in testInput) {
-            Tree.insert(x, x)
+        for (data in testInput) {
+            Tree.insert(data, data)
         }
 
         assertNull(Tree.find(0))
@@ -175,18 +176,18 @@ internal class TestRedBlackTree {
     @Test
     fun testInsert() {
 
-        for (testInputLenght in 0..1000) {
+        for (testInputLength in 0..1000) {
 
-            val testInput: MutableList<Int> = MutableList(testInputLenght) { it + 1 }
+            val testInput: MutableList<Int> = MutableList(testInputLength) { it + 1 }
 
             testInput.shuffle()
 
-            for (x in testInput) {
-                Tree.insert(x, x)
+            for (data in testInput) {
+                Tree.insert(data, data)
             }
 
-            for (x in testInput) {
-                assertEquals(Tree.find(x), Pair(x, x))
+            for (data in testInput) {
+                assertEquals(Pair(data, data), Tree.find(data))
             }
 
         }
@@ -197,14 +198,14 @@ internal class TestRedBlackTree {
     @Test
     fun testInsertSaveStructure() {
 
-        for (testInputLenght in 0..1000) {
+        for (testInputLength in 0..1000) {
 
-            val testInput: MutableList<Int> = MutableList(testInputLenght) { it + 1 }
+            val testInput: MutableList<Int> = MutableList(testInputLength) { it + 1 }
 
             testInput.shuffle()
 
-            for (x in testInput) {
-                Tree.insert(x, x)
+            for (data in testInput) {
+                Tree.insert(data, data)
                 maxBlackHeight = -1
                 assertTrue(checkStructure())
             }
@@ -217,12 +218,12 @@ internal class TestRedBlackTree {
     @Test
     fun testInsertSaveStructureDirectOrder() {
 
-        for (testInputLenght in 0..1000) {
+        for (testInputLength in 0..1000) {
 
-            val testInput: MutableList<Int> = MutableList(testInputLenght) { it + 1 }
+            val testInput: MutableList<Int> = MutableList(testInputLength) { it + 1 }
 
-            for (x in testInput) {
-                Tree.insert(x, x)
+            for (data in testInput) {
+                Tree.insert(data, data)
                 maxBlackHeight = -1
                 assertTrue(checkStructure())
             }
@@ -235,9 +236,9 @@ internal class TestRedBlackTree {
     @Test
     fun testInsertSaveStructureReverseOrder() {
 
-        for (testInputLenght in 0..1000) {
+        for (testInputLength in 0..1000) {
 
-            val testInput: MutableList<Int> = MutableList(testInputLenght) { testInputLenght - it }
+            val testInput: MutableList<Int> = MutableList(testInputLength) { testInputLength - it }
 
             for (x in testInput) {
                 Tree.insert(x, x)
@@ -254,7 +255,9 @@ internal class TestRedBlackTree {
     fun testDeleteRoot() {
 
         Tree.insert(1, 1)
+
         Tree.delete(1)
+
         assertNull(Tree.root)
 
     }
@@ -392,8 +395,8 @@ internal class TestRedBlackTree {
 
             testInput.shuffle()
 
-            for (x in testInput) {
-                Tree.insert(x, x)
+            for (data in testInput) {
+                Tree.insert(data, data)
             }
 
             val m = testInputLength / 2
@@ -424,8 +427,8 @@ internal class TestRedBlackTree {
 
             testInput.shuffle()
 
-            for (x in testInput) {
-                Tree.insert(x, x)
+            for (data in testInput) {
+                Tree.insert(data, data)
             }
 
             val m = testInputLength / 2
@@ -448,8 +451,8 @@ internal class TestRedBlackTree {
 
             val testInput: MutableList<Int> = MutableList(testInputLength) { it + 1 }
 
-            for (x in testInput) {
-                Tree.insert(x, x)
+            for (data in testInput) {
+                Tree.insert(data, data)
             }
 
             val m = testInputLength / 2
@@ -472,8 +475,8 @@ internal class TestRedBlackTree {
 
             val testInput: MutableList<Int> = MutableList(testInputLength) { testInputLength - it }
 
-            for (x in testInput) {
-                Tree.insert(x, x)
+            for (data in testInput) {
+                Tree.insert(data, data)
             }
 
             val m = testInputLength / 2
@@ -507,8 +510,8 @@ internal class TestRedBlackTree {
 
             testInput.shuffle()
 
-            for (x in testInput) {
-                Tree.insert(x, x)
+            for (data in testInput) {
+                Tree.insert(data, data)
             }
 
             var cur = 0

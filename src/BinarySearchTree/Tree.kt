@@ -10,7 +10,7 @@ class BinarySearchTree<K : Comparable<K>, V> : Tree<K, V>, Iterable<Pair<K, V>> 
 
         val res = findNode(key)
 
-        return if (res == null) null else Pair(res.key, res.value)
+        return if (res != null) Pair(res.key, res.value) else null
 
     }
 
@@ -47,6 +47,7 @@ class BinarySearchTree<K : Comparable<K>, V> : Tree<K, V>, Iterable<Pair<K, V>> 
     override fun delete(key: K) {
 
         val node = findNode(key) ?: return
+
         deleteNode(node)
 
     }
@@ -62,10 +63,14 @@ class BinarySearchTree<K : Comparable<K>, V> : Tree<K, V>, Iterable<Pair<K, V>> 
             override fun hasNext(): Boolean = cur != null && cur!!.key <= last!!.key
 
             override fun next(): Pair<K, V> {
+
                 prev = cur
                 cur = next(cur)
+
                 return Pair(prev!!.key, prev!!.value)
+
             }
+
         })
 
     }
@@ -128,18 +133,18 @@ class BinarySearchTree<K : Comparable<K>, V> : Tree<K, V>, Iterable<Pair<K, V>> 
                 cur.left?.parent = parent
             }
         } else {
-            val succesor: Node<K, V> = min(cur.right)!!
-            cur.key = succesor.key
-            cur.value = succesor.value
-            if (succesor == succesor.parent?.left) {
-                succesor.parent?.left = succesor.right
-                if (succesor.right != null) {
-                    succesor.right!!.parent = succesor.parent
+            val successor: Node<K, V> = min(cur.right)!!
+            cur.key = successor.key
+            cur.value = successor.value
+            if (successor == successor.parent?.left) {
+                successor.parent?.left = successor.right
+                if (successor.right != null) {
+                    successor.right!!.parent = successor.parent
                 }
             } else {
-                succesor.parent?.right = succesor.right
-                if (succesor.right != null)
-                    succesor.right!!.parent = succesor.parent
+                successor.parent?.right = successor.right
+                if (successor.right != null)
+                    successor.right!!.parent = successor.parent
             }
         }
 
